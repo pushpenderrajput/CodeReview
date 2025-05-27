@@ -1,8 +1,14 @@
 import React, { useRef } from 'react';
 import { DiffEditor } from '@monaco-editor/react';
-
+import { useSocket } from '../hooks/useSocket';
 function DiffView() {
   const editorRef = useRef(null);
+  const { send, userId, sessionId } = useSocket((msg) => {
+    if (msg.type === 'cursor' && msg.userId !== userId) {
+      console.log(`[Remote Cursor]`, msg);
+      // Later: update remote cursor on UI
+    }
+  });
 
   const originalCode = `
 function calculate(a, b) {
@@ -21,35 +27,37 @@ console.log(calculate(2, 3));
 console.log(calculate(2, 3, 4)); 
 `;
 
-  const handleEditorDidMount = (editor, monaco) => {
+   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
 
     const modifiedEditor = editor.getModifiedEditor();
+    if (!modifiedEditor) return;
 
-    if (!modifiedEditor) {
-      console.error('Modified editor not available.');
-      return;
-    }
-
-    // Log cursor movement
     modifiedEditor.onDidChangeCursorPosition(event => {
-      console.log('[Cursor Move]', {
-        lineNumber: event.position.lineNumber,
-        column: event.position.column,
+      send({
+        type: 'cursor',
+        userId,
+        sessionId,
+        position: event.position
       });
     });
 
-    // Log selection changes
     modifiedEditor.onDidChangeCursorSelection(event => {
-      const selection = event.selection;
-      console.log('[Text Selected]', {
-        startLine: selection.startLineNumber,
-        startColumn: selection.startColumn,
-        endLine: selection.endLineNumber,
-        endColumn: selection.endColumn,
+      const s = event.selection;
+      send({
+        type: 'selection',
+        userId,
+        sessionId,
+        selection: {
+          startLineNumber: s.startLineNumber,
+          startColumn: s.startColumn,
+          endLineNumber: s.endLineNumber,
+          endColumn: s.endColumn
+        }
       });
     });
   };
+
 
   return (
     <div style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>

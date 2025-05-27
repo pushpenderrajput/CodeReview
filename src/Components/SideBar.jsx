@@ -1,19 +1,19 @@
 import React from 'react';
 import { Layout, Menu, Typography, Button, Space, Divider } from 'antd';
 import {
-  CloseOutlined, 
-  DashboardOutlined,
-  CalendarOutlined,
-  SettingOutlined,
+  CloseOutlined,
+  PieChartFilled,
+  CalendarFilled,
+  SettingFilled,
 } from '@ant-design/icons';
 const { Sider } = Layout;
 const { Title } = Typography;
 
 function Sidebar({ isOpen, toggle }) {
   const menuItems = [
-    { key: '1', label: 'Dashboard', icon: <DashboardOutlined /> },
-    { key: '2', label: 'Sessions', icon: <CalendarOutlined /> },
-    { key: '3', label: 'Settings', icon: <SettingOutlined /> },
+    { key: '1', label: 'Dashboard', icon: <PieChartFilled /> },
+    { key: '2', label: 'Sessions', icon: <CalendarFilled /> },
+    { key: '3', label: 'Settings', icon: <SettingFilled /> },
   ];
 
   return (
@@ -36,7 +36,7 @@ function Sidebar({ isOpen, toggle }) {
         theme="dark"
         mode="inline"
         items={menuItems}
-        
+        inlineCollapsed={!isOpen}
         style={{
           background: '#1f1f1f',
           borderRight: 0,

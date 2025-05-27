@@ -9,13 +9,18 @@ function App() {
   const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
   return (
-      <Layout>
+      <Layout style={{ minHeight: '100vh' }}>
       <Header toggleSidebar={toggleSidebar} />
-      <Layout>
+      <Layout hasSider>
         <Sidebar isOpen={sidebarOpen} toggle={toggleSidebar} />
-        <Content><DiffView/></Content>
+        <Layout>
+          <Content>
+            <DiffView />
+          </Content>
+        </Layout>
       </Layout>
     </Layout>
+
   );
 }
 

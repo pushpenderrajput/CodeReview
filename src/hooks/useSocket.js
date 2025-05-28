@@ -5,6 +5,11 @@ export function useSocket(onMessage) {
   const socketRef = useRef(null);
   const userIdRef = useRef(uuidv4());
   const sessionIdRef = useRef(getSessionId());
+  const onMessageRef = useRef(onMessage);
+
+  useEffect(() => {
+    onMessageRef.current = onMessage;
+  }, [onMessage]);
 
   useEffect(() => {
     const socket = new WebSocket('ws://localhost:3001');
@@ -23,14 +28,12 @@ export function useSocket(onMessage) {
       try {
         let data;
         if (event.data instanceof Blob) {
-          // Handle Blob data
           data = await event.data.text();
         } else {
-          // Handle plain text data
           data = event.data;
         }
         const msg = JSON.parse(data);
-        onMessage?.(msg);
+        onMessageRef.current?.(msg);
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
       }
@@ -41,7 +44,7 @@ export function useSocket(onMessage) {
     };
 
     return () => socket.close();
-  }, [onMessage]);
+  }, []);
 
   function send(data) {
     if (socketRef.current?.readyState === WebSocket.OPEN) {

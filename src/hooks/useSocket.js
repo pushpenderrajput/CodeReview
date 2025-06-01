@@ -5,6 +5,7 @@ export function useSocket(onMessage) {
   const socketRef = useRef(null);
   const userIdRef = useRef(uuidv4());
   const sessionIdRef = useRef(getSessionId());
+  const usernameRef = useRef(getRandomName());
   const onMessageRef = useRef(onMessage);
 
   useEffect(() => {
@@ -20,18 +21,14 @@ export function useSocket(onMessage) {
       socket.send(JSON.stringify({
         type: 'join',
         sessionId: sessionIdRef.current,
-        userId: userIdRef.current
+        userId: userIdRef.current,
+        name: usernameRef.current,
       }));
     };
 
     socket.onmessage = async (event) => {
       try {
-        let data;
-        if (event.data instanceof Blob) {
-          data = await event.data.text();
-        } else {
-          data = event.data;
-        }
+        const data = event.data instanceof Blob ? await event.data.text() : event.data;
         const msg = JSON.parse(data);
         onMessageRef.current?.(msg);
       } catch (error) {
@@ -55,7 +52,8 @@ export function useSocket(onMessage) {
   return {
     send,
     userId: userIdRef.current,
-    sessionId: sessionIdRef.current
+    sessionId: sessionIdRef.current,
+    username: usernameRef.current
   };
 }
 
@@ -67,4 +65,9 @@ function getSessionId() {
     window.history.replaceState({}, '', `?session=${sessionId}`);
   }
   return sessionId;
+}
+
+function getRandomName() {
+  const names = ['Pushpender', 'Anshul', 'Kajal', 'Deepu', 'Navjot', 'Aadi', 'Ravi'];
+  return names[Math.floor(Math.random() * names.length)];
 }

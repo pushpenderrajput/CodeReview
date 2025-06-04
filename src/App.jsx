@@ -16,6 +16,7 @@ function App() {
         <Layout>
           <Content>
             <DiffView />
+            
           </Content>
         </Layout>
       </Layout>

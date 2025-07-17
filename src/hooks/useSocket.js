@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-export function useSocket(onMessage) {
+export function useSocket(onMessage, { userId, username }) {
   const socketRef = useRef(null);
-  const userIdRef = useRef(uuidv4());
+  const userIdRef = useRef(userId);
+  const usernameRef = useRef(username);
   const sessionIdRef = useRef(getSessionId());
-  const usernameRef = useRef(getRandomName());
   const onMessageRef = useRef(onMessage);
+  
 
   useEffect(() => {
     onMessageRef.current = onMessage;

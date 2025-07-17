@@ -1,27 +1,36 @@
-import React, { useState } from 'react';
-import Layout from 'antd/es/layout/layout';
-import { Content } from 'antd/es/layout/layout';
-import Sidebar from './Components/SideBar';
-import Header from './Components/Header';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import DiffView from './Components/DiffView';
+import Login from './Components/pages/Login';
+
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const toggleSidebar = () => setSidebarOpen(prev => !prev);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
 
   return (
-      <Layout style={{ minHeight: '100vh' }}>
-      <Header toggleSidebar={toggleSidebar} />
-      <Layout hasSider>
-        <Sidebar isOpen={sidebarOpen} toggle={toggleSidebar} />
-        <Layout>
-          <Content>
-            <DiffView />
-            
-          </Content>
-        </Layout>
-      </Layout>
-    </Layout>
-
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            user ? (
+              <DiffView user={user} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/login"
+          element={<Login onLogin={(user) => {
+            setUser(user);
+            localStorage.setItem('user', JSON.stringify(user));
+          }} />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

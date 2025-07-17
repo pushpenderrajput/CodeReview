@@ -3,7 +3,7 @@ import { DiffEditor } from '@monaco-editor/react';
 import { v4 as uuidv4 } from 'uuid';
 import { useSocket } from '../hooks/useSocket';
 
-function DiffView() {
+function DiffView({ user }) {
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const decorationIds = useRef([]);
@@ -62,6 +62,9 @@ function DiffView() {
         selection: msg.hasOwnProperty("selection") ? msg.selection : prev[msg.userId]?.selection,
       }
     }));
+  }, {
+    userId: user.userId,
+    username: user.name
   });
 
   const handleAddComment = (lineNumber, text) => {
